@@ -7,10 +7,11 @@ from api.base.serializers import AllowMissing, JSONAPIRelationshipSerializer, Hi
 from website.models import User
 
 from api.base.serializers import (
-    JSONAPISerializer, LinksField, RelationshipField, DevOnly, IDField, TypeField
+    JSONAPISerializer, LinksField, RelationshipField, DevOnly, IDField, TypeField, JSONAPIListField
 )
 from api.base.utils import absolute_reverse
-
+from api.nodes.serializers import NodeTagField
+from api.preprints.serializers import PreprintSerializer
 
 class UserSerializer(JSONAPISerializer):
     filterable_fields = frozenset([
@@ -68,6 +69,11 @@ class UserSerializer(JSONAPISerializer):
 
     nodes = HideIfDisabled(RelationshipField(
         related_view='users:user-nodes',
+        related_view_kwargs={'user_id': '<pk>'},
+    ))
+
+    preprints = HideIfDisabled(RelationshipField(
+        related_view='users:user-preprints',
         related_view_kwargs={'user_id': '<pk>'},
     ))
 
@@ -183,3 +189,32 @@ class UserInstitutionsRelationshipSerializer(ser.Serializer):
 
     class Meta:
         type_ = 'institutions'
+
+class UserPreprintsSerializer(PreprintSerializer):
+    #filterable_fields = frozenset([
+    #    'title',
+    #    'abstract',
+    #    'authors',
+    #    'subjects',
+    #    'id',
+    #    'tags',
+    #])
+    #title = ser.CharField()
+    #abstract = ser.CharField(allow_blank=True, allow_null=True, source='description')
+    #subjects = ser.CharField(source='preprint_subjects')
+    #id = IDField(source='_id')
+    #tags = JSONAPIListField(child=NodeTagField(), required=False)
+
+    #authors = RelationshipField(
+    #    related_view='preprints:preprint-authors',
+    #    related_view_kwargs={'node_id': '<pk>'},
+    #    related_meta={'count': 'get_contrib_count'},
+    #)
+
+    #root = RelationshipField(
+    #    related_view='preprints:preprint-detail',
+    #    related_view_kwargs={'node_id': '<root._id>'}
+    #)
+
+    class Meta:
+        type_ = 'preprints'

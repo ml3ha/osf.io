@@ -13,4 +13,6 @@ urlpatterns = [
     url(r'^(?P<user_id>\w+)/institutions/$', views.UserInstitutions.as_view(), name=views.UserInstitutions.view_name),
     url(r'^(?P<user_id>\w+)/registrations/$', views.UserRegistrations.as_view(), name=views.UserRegistrations.view_name),
     url(r'^(?P<user_id>\w+)/relationships/institutions/$', views.UserInstitutionsRelationship.as_view(), name=views.UserInstitutionsRelationship.view_name),
+    # /v2/<user_id>/preprints/
+    url(r'^(?P<user_id>\w+)/preprints/$', views.UserPreprintsList.as_view(), name=views.UserPreprintsList.view_name),
 ]
