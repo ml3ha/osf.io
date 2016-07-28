@@ -7,11 +7,10 @@ from api.base.serializers import AllowMissing, JSONAPIRelationshipSerializer, Hi
 from website.models import User
 
 from api.base.serializers import (
-    JSONAPISerializer, LinksField, RelationshipField, DevOnly, IDField, TypeField, JSONAPIListField
+    JSONAPISerializer, LinksField, RelationshipField, DevOnly, IDField, TypeField
 )
 from api.base.utils import absolute_reverse
 from framework.auth.views import send_confirm_email
-from api.preprints.serializers import PreprintSerializer
 
 class UserSerializer(JSONAPISerializer):
     filterable_fields = frozenset([
@@ -69,11 +68,6 @@ class UserSerializer(JSONAPISerializer):
 
     nodes = HideIfDisabled(RelationshipField(
         related_view='users:user-nodes',
-        related_view_kwargs={'user_id': '<pk>'},
-    ))
-
-    preprints = HideIfDisabled(RelationshipField(
-        related_view='users:user-preprints',
         related_view_kwargs={'user_id': '<pk>'},
     ))
 
@@ -195,26 +189,3 @@ class RelatedInstitution(JSONAPIRelationshipSerializer):
     def get_absolute_url(self, obj):
         return obj.absolute_api_v2_url
 
-
-class UserInstitutionsRelationshipSerializer(ser.Serializer):
-
-    data = ser.ListField(child=RelatedInstitution())
-    links = LinksField({'self': 'get_self_url',
-                        'html': 'get_related_url'})
-
-    def get_self_url(self, obj):
-        return absolute_reverse('users:user-institutions-relationship', kwargs={'user_id': obj['self']._id})
-
-    def get_related_url(self, obj):
-        return absolute_reverse('users:user-institutions', kwargs={'user_id': obj['self']._id})
-
-    def get_absolute_url(self, obj):
-        return obj.absolute_api_v2_url
-
-    class Meta:
-        type_ = 'institutions'
-
-class UserPreprintsSerializer(PreprintSerializer):
-    # Overrides more generic PreprintSerializer to show user-specific preprints. Difference is the query in the view
-    class Meta:
-        type_ = 'preprints'

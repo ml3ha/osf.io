@@ -23,7 +23,7 @@ from api.registrations.serializers import RegistrationSerializer
 from api.base.utils import default_node_list_query, default_node_permission_query
 from api.addons.views import AddonSettingsMixin
 
-from .serializers import UserSerializer, UserAddonSettingsSerializer, UserDetailSerializer, UserInstitutionsRelationshipSerializer, UserPreprintsSerializer
+from .serializers import UserSerializer, UserAddonSettingsSerializer, UserDetailSerializer, UserInstitutionsRelationshipSerializer
 from .permissions import ReadOnlyOrCurrentUser, ReadOnlyOrCurrentUserRelationship, CurrentUser
 
 
@@ -672,33 +672,3 @@ class UserInstitutionsRelationship(JSONAPIBaseView, generics.RetrieveDestroyAPIV
             if val['id'] in current_institutions:
                 user.remove_institution(val['id'])
         user.save()
-
-class UserPreprintsList(JSONAPIBaseView, generics.ListAPIView, UserMixin, ODMFilterMixin):
-    permission_classes = (
-        drf_permissions.IsAuthenticatedOrReadOnly,
-        base_permissions.TokenHasScope,
-    )
-
-    required_read_scopes = [CoreScopes.USERS_READ, CoreScopes.NODE_BASE_READ]
-    required_write_scopes = [CoreScopes.USERS_WRITE, CoreScopes.NODE_BASE_WRITE]
-
-    serializer_class = UserPreprintsSerializer
-    view_category = 'users'
-    view_name = 'user-preprints'
-
-    ordering = ('-date_modified',)
-
-    # overrides ODMFilterMixin
-    def get_default_odm_query(self):
-        user = self.get_user()
-        query = (
-            Q('contributors', 'eq', user) &
-            Q('preprint_file', 'neq', None)
-        )
-        if user != self.request.user:
-            query &= default_node_permission_query(self.request.user)
-        return query
-
-    # overrides ListAPIView
-    def get_queryset(self):
-        return Node.find(self.get_query_from_request())
