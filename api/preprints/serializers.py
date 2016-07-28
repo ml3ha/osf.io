@@ -26,6 +26,8 @@ class PreprintSerializer(JSONAPISerializer):
         'info': Link('files:file-detail', kwargs={'file_id': '<_id>'}),
     })
 
+    links = LinksField({'html': 'get_absolute_html_url'})
+
     authors = RelationshipField(
         related_view='preprints:preprint-authors',
         related_view_kwargs={'node_id': '<pk>'},
