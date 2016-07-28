@@ -1515,17 +1515,6 @@ class TestDeleteNodeWiki(OsfTestCase):
 
 class TestNode(OsfTestCase):
 
-    def test_validate_subjects_invalid_subject(self):
-        with assert_raises(ValidationError):
-            Node(preprint_subjects=["not a subject"]).save()  # an invalid subject
-
-    def test_validate_subjects_empty(self):
-        with assert_raises(ValidationError):
-            Node(preprint_subjects=[]).save()
-
-    def test_validate_subjects_valid(self):
-        Node(preprint_subjects=["Biology", "Agriculture", "Agricultural Economics"]).save()
-        assert_equal(Node['preprint_subjects'], ["Biology", "Agriculture", "Agricultural Economics"])
 
     def setUp(self):
         super(TestNode, self).setUp()

@@ -746,13 +746,6 @@ def validate_user(value):
             raise ValidationValueError('User does not exist.')
     return True
 
-# TODO: change subjects to actual taxonomy
-def validate_subjects(value):
-    if value not in ["biology", "chemistry", "computer science"]:
-        raise ValidationValueError('Not a valid subject')
-    return True
-
-
 class NodeUpdateError(Exception):
     def __init__(self, reason, key, *args, **kwargs):
         super(NodeUpdateError, self).__init__(*args, **kwargs)
@@ -834,7 +827,6 @@ class Node(GuidStoredObject, AddonModelMixin, IdentifierMixin, Commentable):
         'is_retracted',
         'node_license',
         '_affiliated_institutions',
-        'preprint_file',
     }
 
     # Fields that are writable by Node.update
@@ -873,11 +865,6 @@ class Node(GuidStoredObject, AddonModelMixin, IdentifierMixin, Commentable):
     is_registration = fields.BooleanField(default=False, index=True)
     registered_date = fields.DateTimeField(index=True)
     registered_user = fields.ForeignField('user')
-
-    # Preprints fields
-    preprint_file = fields.ForeignField('StoredFileNode')
-    preprint_created = fields.DateTimeField()
-    preprint_subjects = fields.StringField(list=True, validate=validate_subjects)
 
     # A list of all MetaSchemas for which this Node has registered_meta
     registered_schema = fields.ForeignField('metaschema', list=True, default=list)
@@ -972,17 +959,6 @@ class Node(GuidStoredObject, AddonModelMixin, IdentifierMixin, Commentable):
     def __repr__(self):
         return ('<Node(title={self.title!r}, category={self.category!r}) '
                 'with _id {self._id!r}>').format(self=self)
-
-    #@property
-    #def is_preprint(self):
-    #    if self.preprint_file is None:
-    #        return False
-    #    if self.preprint_file.parent_node is self:
-    #        return True
-    #    else:
-    #        self.preprint_file = None
-    #        self.save()
-    #        return True
 
     # For Django compatibility
     @property
