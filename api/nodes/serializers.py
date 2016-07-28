@@ -545,7 +545,8 @@ class NodeContributorsSerializer(JSONAPISerializer):
     filterable_fields = frozenset([
         'id',
         'bibliographic',
-        'permission'
+        'permission',
+        'index'
     ])
 
     id = ContributorIDField(read_only=True, source='_id')
