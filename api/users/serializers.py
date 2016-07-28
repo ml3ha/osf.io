@@ -7,11 +7,12 @@ from api.base.serializers import AllowMissing, JSONAPIRelationshipSerializer, Hi
 from website.models import User
 
 from api.base.serializers import (
-    JSONAPISerializer, LinksField, RelationshipField, DevOnly, IDField, TypeField
+    JSONAPISerializer, LinksField, RelationshipField, DevOnly, IDField, TypeField, JSONAPIListField
 )
 from api.base.utils import absolute_reverse
 
 from framework.auth.views import send_confirm_email
+from api.preprints.serializers import PreprintSerializer
 
 class UserSerializer(JSONAPISerializer):
     filterable_fields = frozenset([
@@ -69,6 +70,11 @@ class UserSerializer(JSONAPISerializer):
 
     nodes = HideIfDisabled(RelationshipField(
         related_view='users:user-nodes',
+        related_view_kwargs={'user_id': '<pk>'},
+    ))
+
+    preprints = HideIfDisabled(RelationshipField(
+        related_view='users:user-preprints',
         related_view_kwargs={'user_id': '<pk>'},
     ))
 
@@ -208,3 +214,8 @@ class UserInstitutionsRelationshipSerializer(ser.Serializer):
 
     class Meta:
         type_ = 'institutions'
+
+class UserPreprintsSerializer(PreprintSerializer):
+    # Overrides more generic PreprintSerializer to show user-specific preprints. Difference is the query in the view
+    class Meta:
+        type_ = 'preprints'
