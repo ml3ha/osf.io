@@ -10,8 +10,8 @@ from api.base.serializers import (
     JSONAPISerializer, LinksField, RelationshipField, DevOnly, IDField, TypeField, JSONAPIListField
 )
 from api.base.utils import absolute_reverse
-from api.preprints.serializers import PreprintSerializer
 from framework.auth.views import send_confirm_email
+from api.preprints.serializers import PreprintSerializer
 
 class UserSerializer(JSONAPISerializer):
     filterable_fields = frozenset([
